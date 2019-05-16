@@ -3,4 +3,4 @@ pluginManagement {
 		gradlePluginPortal()
 	}
 }
-rootProject.name = "kotlin-todo"
+rootProject.name = "kotlin-crud-practice"

@@ -1,4 +1,4 @@
-package jp.glory.todo
+package jp.glory.kotlin.crud
 
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -7,7 +7,7 @@ import org.springframework.test.context.junit4.SpringRunner
 
 @RunWith(SpringRunner::class)
 @SpringBootTest
-class KotlinTodoApplicationTests {
+class KotlinCrudPracticeApplicationTests {
 
 	@Test
 	fun contextLoads() {
