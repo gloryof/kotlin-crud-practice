@@ -33,3 +33,7 @@ HELP.md
 
 ### Other ###
 bin
+.gradle
+.idea
+.settings
+bin

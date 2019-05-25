@@ -9,7 +9,9 @@ plugins {
 
 group = "jp.glory"
 version = "0.0.1-SNAPSHOT"
+
 java.sourceCompatibility = JavaVersion.VERSION_12
+java.targetCompatibility = JavaVersion.VERSION_12
 
 repositories {
 	mavenCentral()
@@ -22,12 +24,20 @@ dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 	runtimeOnly("org.springframework.boot:spring-boot-devtools")
 	runtimeOnly("org.postgresql:postgresql")
-	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	testImplementation("org.springframework.boot:spring-boot-starter-test") {
+		exclude(module = "junit")
+	}
+	testImplementation("org.junit.jupiter:junit-jupiter-api")
+	testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
 }
 
 tasks.withType<KotlinCompile> {
 	kotlinOptions {
 		freeCompilerArgs = listOf("-Xjsr305=strict")
-		jvmTarget = "1.8"
+		jvmTarget = "12"
 	}
+}
+
+tasks.withType<Test> {
+	useJUnitPlatform()
 }
