@@ -1,4 +1,4 @@
-package jp.glory.kotlin.crud.base.domain.error
+package jp.glory.kotlin.crud.context.base.domain.error
 
 /**
  * エラー情報.
