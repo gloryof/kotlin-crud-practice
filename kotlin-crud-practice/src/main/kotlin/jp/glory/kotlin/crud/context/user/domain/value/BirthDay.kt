@@ -5,6 +5,7 @@ import java.time.temporal.ChronoUnit
 
 /**
  * 誕生日.
+ * @param value 値
  */
 class BirthDay(val value: LocalDate) {
 

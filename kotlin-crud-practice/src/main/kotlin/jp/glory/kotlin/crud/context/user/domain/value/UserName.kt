@@ -2,6 +2,8 @@ package jp.glory.kotlin.crud.context.user.domain.value
 
 /**
  * ユーザ名.
+ * @param lastName 姓
+ * @param firstName 名
  */
 class UserName(val lastName: String, val firstName: String) {
 

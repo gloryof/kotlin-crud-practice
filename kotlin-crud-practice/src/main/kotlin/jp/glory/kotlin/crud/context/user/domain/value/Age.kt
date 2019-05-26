@@ -17,4 +17,6 @@ fun getZeroAge(): Age {
 /**
  * 年齢.
  */
-class Age(val value: Int)
+class Age(val value: Int) {
+    companion object
+}
