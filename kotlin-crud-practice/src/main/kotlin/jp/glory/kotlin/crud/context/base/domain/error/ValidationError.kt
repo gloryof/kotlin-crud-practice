@@ -5,4 +5,4 @@ package jp.glory.kotlin.crud.context.base.domain.error
  * @param errorInfo エラー情報
  * @param messageParam メッセージパラメータ
  */
-class ValidationError(val errorInfo: ErrorInfo, var messageParam:Array<Any>)
+data class ValidationError(val errorInfo: ErrorInfo, var messageParam:Array<Any>)

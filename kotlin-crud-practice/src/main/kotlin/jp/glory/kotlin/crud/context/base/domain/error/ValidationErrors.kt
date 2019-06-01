@@ -53,4 +53,8 @@ class ValidationErrors {
         return errors.toList()
     }
 
+    override fun toString(): String {
+        return "ValidationErrors(errors=$errors)"
+    }
+
 }
