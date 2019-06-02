@@ -1,9 +1,7 @@
-package jp.glory.kotlin.crud.base.usecase
+package jp.glory.kotlin.crud.context.base.usecase
 
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.lang.annotation.ElementType
-import java.lang.annotation.RetentionPolicy
 
 
 /**
