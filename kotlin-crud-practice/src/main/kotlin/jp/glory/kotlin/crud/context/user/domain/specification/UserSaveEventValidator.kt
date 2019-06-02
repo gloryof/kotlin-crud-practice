@@ -2,6 +2,7 @@ package jp.glory.kotlin.crud.context.user.domain.specification
 
 import jp.glory.kotlin.crud.context.base.domain.error.*
 import jp.glory.kotlin.crud.context.user.domain.entity.User
+import jp.glory.kotlin.crud.context.user.domain.event.UserSaveEvent
 import jp.glory.kotlin.crud.context.user.domain.value.*
 import java.lang.Exception
 import java.time.LocalDate
@@ -9,9 +10,9 @@ import java.time.format.DateTimeFormatter
 import java.time.format.ResolverStyle
 
 /**
- * ユーザの入力チェックを行う.
+ * ユーザ保存イベントの入力チェックを行う.
  */
-class UserValidator {
+class UserSaveEventValidator {
 
     /**
      * 姓.
@@ -34,7 +35,7 @@ class UserValidator {
      * @param id ユーザID
      * @return 入力チェック結果
      */
-    fun validate(id: UserId): ValidationResult<User> {
+    fun validate(id: UserId): ValidationResult<UserSaveEvent> {
 
         val result = ValidationErrors()
 
@@ -138,9 +139,9 @@ class UserValidator {
      * @param id ユーザID
      * @return ユーザモデル
      */
-    private fun convert(id: UserId): User {
+    private fun convert(id: UserId): UserSaveEvent {
 
-        return  User(
+        return  UserSaveEvent(
                 userId = id,
                 userName = UserName(lastName ?: "", firstName ?: ""),
                 birthDay = BirthDay(converFromToBirthDay())

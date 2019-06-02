@@ -5,8 +5,8 @@ import jp.glory.kotlin.crud.context.base.domain.error.ValidResult
 import jp.glory.kotlin.crud.context.base.domain.error.ValidationErrors
 import jp.glory.kotlin.crud.context.base.domain.error.ValidationResult
 import jp.glory.kotlin.crud.context.user.domain.entity.User
+import jp.glory.kotlin.crud.context.user.domain.event.UserSaveEvent
 import jp.glory.kotlin.crud.context.user.domain.value.RegisteredUserId
-import jp.glory.kotlin.crud.context.user.domain.value.UserId
 import jp.glory.kotlin.crud.test.tool.ValidationAssert
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
@@ -15,14 +15,14 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 
-internal class UserValidatorTest {
+internal class UserSaveEventValidatorTest {
 
-    var sut: UserValidator? = null
+    var sut: UserSaveEventValidator? = null
 
     @BeforeEach
     fun setUp() {
 
-        val temp = UserValidator()
+        val temp = UserSaveEventValidator()
 
         temp.lastName = "テスト姓"
         temp.firstName = "テスト名"
@@ -39,7 +39,7 @@ internal class UserValidatorTest {
         @Test
         fun executeValidate() {
 
-            val actual: ValidationResult<User> = sut!!.validate(RegisteredUserId(1000))
+            val actual: ValidationResult<UserSaveEvent> = sut!!.validate(RegisteredUserId(1000))
 
             val user = when(actual) {
                 is ValidResult -> actual.value
@@ -67,7 +67,7 @@ internal class UserValidatorTest {
             sut!!.lastName = expectedLastName
             sut!!.firstName = expectedFirstName
 
-            val actual: ValidationResult<User> = sut!!.validate(RegisteredUserId(1000))
+            val actual: ValidationResult<UserSaveEvent> = sut!!.validate(RegisteredUserId(1000))
 
             val user = when(actual) {
                 is ValidResult -> actual.value
@@ -93,7 +93,7 @@ internal class UserValidatorTest {
 
             sut!!.lastName = ""
 
-            val actual: ValidationResult<User> = sut!!.validate(RegisteredUserId(1000))
+            val actual: ValidationResult<UserSaveEvent> = sut!!.validate(RegisteredUserId(1000))
 
             val errors = when(actual) {
                 is InvalidResult -> actual.errors
@@ -113,7 +113,7 @@ internal class UserValidatorTest {
 
             sut!!.lastName = " "
 
-            val actual: ValidationResult<User> = sut!!.validate(RegisteredUserId(1000))
+            val actual: ValidationResult<UserSaveEvent> = sut!!.validate(RegisteredUserId(1000))
 
             val errors = when(actual) {
                 is InvalidResult -> actual.errors
@@ -133,7 +133,7 @@ internal class UserValidatorTest {
 
             sut!!.lastName = "あ".repeat(31)
 
-            val actual: ValidationResult<User> = sut!!.validate(RegisteredUserId(1000))
+            val actual: ValidationResult<UserSaveEvent> = sut!!.validate(RegisteredUserId(1000))
 
             val errors = when(actual) {
                 is InvalidResult -> actual.errors
@@ -160,7 +160,7 @@ internal class UserValidatorTest {
 
             sut!!.firstName = ""
 
-            val actual: ValidationResult<User> = sut!!.validate(RegisteredUserId(1000))
+            val actual: ValidationResult<UserSaveEvent> = sut!!.validate(RegisteredUserId(1000))
 
             val errors = when(actual) {
                 is InvalidResult -> actual.errors
@@ -180,7 +180,7 @@ internal class UserValidatorTest {
 
             sut!!.firstName = " "
 
-            val actual: ValidationResult<User> = sut!!.validate(RegisteredUserId(1000))
+            val actual: ValidationResult<UserSaveEvent> = sut!!.validate(RegisteredUserId(1000))
 
             val errors = when(actual) {
                 is InvalidResult -> actual.errors
@@ -200,7 +200,7 @@ internal class UserValidatorTest {
 
             sut!!.firstName = "あ".repeat(31)
 
-            val actual: ValidationResult<User> = sut!!.validate(RegisteredUserId(1000))
+            val actual: ValidationResult<UserSaveEvent> = sut!!.validate(RegisteredUserId(1000))
 
             val errors = when(actual) {
                 is InvalidResult -> actual.errors
@@ -227,7 +227,7 @@ internal class UserValidatorTest {
 
             sut!!.birthDay = ""
 
-            val actual: ValidationResult<User> = sut!!.validate(RegisteredUserId(1000))
+            val actual: ValidationResult<UserSaveEvent> = sut!!.validate(RegisteredUserId(1000))
 
             val errors = when(actual) {
                 is InvalidResult -> actual.errors
@@ -247,7 +247,7 @@ internal class UserValidatorTest {
 
             sut!!.birthDay = " "
 
-            val actual: ValidationResult<User> = sut!!.validate(RegisteredUserId(1000))
+            val actual: ValidationResult<UserSaveEvent> = sut!!.validate(RegisteredUserId(1000))
 
             val errors = when(actual) {
                 is InvalidResult -> actual.errors
@@ -271,7 +271,7 @@ internal class UserValidatorTest {
 
                 sut!!.birthDay = "1986/12/16"
 
-                val actual: ValidationResult<User> = sut!!.validate(RegisteredUserId(1000))
+                val actual: ValidationResult<UserSaveEvent> = sut!!.validate(RegisteredUserId(1000))
 
                 val errors = when(actual) {
                     is InvalidResult -> actual.errors
@@ -291,7 +291,7 @@ internal class UserValidatorTest {
 
                 sut!!.birthDay = "1987-02-29"
 
-                val actual: ValidationResult<User> = sut!!.validate(RegisteredUserId(1000))
+                val actual: ValidationResult<UserSaveEvent> = sut!!.validate(RegisteredUserId(1000))
 
                 val errors = when(actual) {
                     is InvalidResult -> actual.errors
@@ -311,7 +311,7 @@ internal class UserValidatorTest {
 
                 sut!!.birthDay = "1987-2-1"
 
-                val actual: ValidationResult<User> = sut!!.validate(RegisteredUserId(1000))
+                val actual: ValidationResult<UserSaveEvent> = sut!!.validate(RegisteredUserId(1000))
 
                 val errors = when(actual) {
                     is InvalidResult -> actual.errors
