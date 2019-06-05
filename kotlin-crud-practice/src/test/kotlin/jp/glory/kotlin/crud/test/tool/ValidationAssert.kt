@@ -2,7 +2,6 @@ package jp.glory.kotlin.crud.test.tool
 
 import jp.glory.kotlin.crud.context.base.domain.error.ValidationError
 import jp.glory.kotlin.crud.context.base.domain.error.ValidationErrors
-import org.junit.jupiter.api.Assertions.assertArrayEquals
 import org.junit.jupiter.api.Assertions.assertEquals
 
 /**
@@ -32,11 +31,10 @@ class ValidationAssert(private val expected: ValidationErrors, private val actua
         assertEquals(expectedList.size, actualList.size)
     }
 
-    private fun assertDetail(index:Int, expectedDetail: ValidationError, actualDetail: ValidationError) {
+    private fun assertDetail(index: Int, expectedDetail: ValidationError, actualDetail: ValidationError) {
 
         val message = """インデックス${index}の要素"""
 
-        assertEquals(expectedDetail.errorInfo, actualDetail.errorInfo, message)
-        assertArrayEquals(expectedDetail.messageParam, actualDetail.messageParam, message)
+        assertEquals(expectedDetail.createMessage(), actualDetail.createMessage(), message)
     }
 }

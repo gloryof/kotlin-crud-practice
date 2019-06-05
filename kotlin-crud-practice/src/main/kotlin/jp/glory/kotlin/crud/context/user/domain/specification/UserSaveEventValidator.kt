@@ -1,36 +1,40 @@
 package jp.glory.kotlin.crud.context.user.domain.specification
 
-import jp.glory.kotlin.crud.context.base.domain.error.*
-import jp.glory.kotlin.crud.context.user.domain.entity.User
+import jp.glory.kotlin.crud.context.base.domain.error.InvalidResult
+import jp.glory.kotlin.crud.context.base.domain.error.ValidResult
+import jp.glory.kotlin.crud.context.base.domain.error.ValidationErrors
+import jp.glory.kotlin.crud.context.base.domain.error.ValidationResult
 import jp.glory.kotlin.crud.context.user.domain.event.UserSaveEvent
-import jp.glory.kotlin.crud.context.user.domain.value.*
-import java.lang.Exception
+import jp.glory.kotlin.crud.context.user.domain.repository.UserRepository
+import jp.glory.kotlin.crud.context.user.domain.value.BirthDay
+import jp.glory.kotlin.crud.context.user.domain.value.RegisteredUserId
+import jp.glory.kotlin.crud.context.user.domain.value.UserId
+import jp.glory.kotlin.crud.context.user.domain.value.UserName
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.ResolverStyle
 
 /**
  * ユーザ保存イベントの入力チェックを行う.
+ *
+ * @param userRepository ユーザリポジトリ
+ * @param lastName 姓
+ * @param firstName 名
+ * @param birthDay 誕生日
  */
-class UserSaveEventValidator {
-
-    /**
-     * 姓.
-     */
-    var lastName: String? = null
-
-    /**
-     * 名.
-     */
-    var firstName: String? = null
-
-    /**
-     * 誕生日.
-     */
-    var birthDay: String? = null
+class UserSaveEventValidator(
+        private val userRepository: UserRepository,
+        private val lastName: String = "",
+        private val firstName: String = "",
+        private val birthDay: String = "") {
 
     /**
      * 未登録のユーザの入力チェックを行う.
+     *
+     * - 姓のチェックを行う([validateLastName])
+     * - 名のチェックを行う([validateFirstName])
+     * - 誕生日のチェックを行う([validateBirthDay])
+     * - 登録済みユーザIDの場合ユーザの存在チェックを行う([validateExistUser])
      *
      * @param id ユーザID
      * @return 入力チェック結果
@@ -42,6 +46,11 @@ class UserSaveEventValidator {
         validateLastName(result)
         validateFirstName(result)
         validateBirthDay(result)
+
+        when (id) {
+            is RegisteredUserId -> validateExistUser(result, id)
+        }
+
 
         if (result.hasError()) {
 
@@ -64,15 +73,14 @@ class UserSaveEventValidator {
 
         val itemName = "姓"
         val maxLength = 30
-        val value = lastName ?: ""
 
-        if (value.trim().isEmpty()) {
+        if (lastName.trim().isEmpty()) {
 
             errors.addRequiredError(itemName)
             return
         }
 
-        if (value.length > maxLength) {
+        if (lastName.length > maxLength) {
 
             errors.addMaxLength(itemName = itemName, length = maxLength)
         }
@@ -91,15 +99,14 @@ class UserSaveEventValidator {
 
         val itemName = "名"
         val maxLength = 30
-        val value = firstName ?: ""
 
-        if (value.trim().isEmpty()) {
+        if (firstName.trim().isEmpty()) {
 
             errors.addRequiredError(itemName)
             return
         }
 
-        if (value.length > maxLength) {
+        if (firstName.length > maxLength) {
 
             errors.addMaxLength(itemName = itemName, length = maxLength)
         }
@@ -117,10 +124,9 @@ class UserSaveEventValidator {
     private fun validateBirthDay(errors: ValidationErrors) {
 
         val itemName = "誕生日"
-        val value = birthDay ?: ""
 
 
-        if (value.trim().isEmpty()) {
+        if (birthDay.trim().isEmpty()) {
 
             errors.addRequiredError(itemName)
             return
@@ -134,6 +140,21 @@ class UserSaveEventValidator {
     }
 
     /**
+     * ユーザの存在チェックを行う.
+     *
+     * @param errors エラーリスト
+     * @param registeredUserId 登録済みユーザID
+     */
+    private fun validateExistUser(errors: ValidationErrors, registeredUserId: RegisteredUserId) {
+
+
+        if (userRepository.findByUserId(registeredUserId) == null) {
+
+            errors.addNotExistUser()
+        }
+    }
+
+    /**
      * モデルに変換する.
      *
      * @param id ユーザID
@@ -141,9 +162,9 @@ class UserSaveEventValidator {
      */
     private fun convert(id: UserId): UserSaveEvent {
 
-        return  UserSaveEvent(
+        return UserSaveEvent(
                 userId = id,
-                userName = UserName(lastName ?: "", firstName ?: ""),
+                userName = UserName(lastName, firstName),
                 birthDay = BirthDay(converFromToBirthDay())
         )
     }
@@ -158,7 +179,7 @@ class UserSaveEventValidator {
 
             converFromToBirthDay()
             true
-        } catch (e :Exception) {
+        } catch (e: Exception) {
 
             false
         }
@@ -167,8 +188,8 @@ class UserSaveEventValidator {
     private fun converFromToBirthDay(): LocalDate {
 
         return DateTimeFormatter
-                    .ofPattern("uuuu-MM-dd")
-                    .withResolverStyle(ResolverStyle.STRICT)
-                    .parse(birthDay, LocalDate::from)
+                .ofPattern("uuuu-MM-dd")
+                .withResolverStyle(ResolverStyle.STRICT)
+                .parse(birthDay, LocalDate::from)
     }
 }

@@ -1,14 +1,21 @@
 package jp.glory.kotlin.crud.context.user.domain.specification
 
+import io.mockk.every
+import io.mockk.mockk
 import jp.glory.kotlin.crud.context.base.domain.error.InvalidResult
 import jp.glory.kotlin.crud.context.base.domain.error.ValidResult
 import jp.glory.kotlin.crud.context.base.domain.error.ValidationErrors
 import jp.glory.kotlin.crud.context.base.domain.error.ValidationResult
 import jp.glory.kotlin.crud.context.user.domain.entity.User
 import jp.glory.kotlin.crud.context.user.domain.event.UserSaveEvent
+import jp.glory.kotlin.crud.context.user.domain.repository.UserRepository
+import jp.glory.kotlin.crud.context.user.domain.value.BirthDay
+import jp.glory.kotlin.crud.context.user.domain.value.NotRegisteredUserId
 import jp.glory.kotlin.crud.context.user.domain.value.RegisteredUserId
+import jp.glory.kotlin.crud.context.user.domain.value.UserName
 import jp.glory.kotlin.crud.test.tool.ValidationAssert
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.fail
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
@@ -17,18 +24,20 @@ import java.time.LocalDate
 
 internal class UserSaveEventValidatorTest {
 
-    var sut: UserSaveEventValidator? = null
+    private var sut: UserSaveEventValidator? = null
+    private var mockUserRepository: UserRepository? = null
+    private val existUser = User(
+            userId = RegisteredUserId(1000),
+            userName = UserName("テスト姓", "テスト名"),
+            birthDay = BirthDay(LocalDate.of(1986, 12, 16))
+    )
 
     @BeforeEach
     fun setUp() {
 
-        val temp = UserSaveEventValidator()
+        mockUserRepository = mockk()
 
-        temp.lastName = "テスト姓"
-        temp.firstName = "テスト名"
-        temp.birthDay = "1986-12-16"
-
-        sut = temp
+        sut = createSut()
     }
 
     @DisplayName("全てが正常に入力されている場合")
@@ -39,9 +48,12 @@ internal class UserSaveEventValidatorTest {
         @Test
         fun executeValidate() {
 
-            val actual: ValidationResult<UserSaveEvent> = sut!!.validate(RegisteredUserId(1000))
+            every {
 
-            val user = when(actual) {
+                mockUserRepository!!.findByUserId(any())
+            } returns existUser
+
+            val user = when (val actual: ValidationResult<UserSaveEvent> = sut!!.validate(RegisteredUserId(1000))) {
                 is ValidResult -> actual.value
                 is InvalidResult -> fail(actual.toString())
             }
@@ -64,12 +76,14 @@ internal class UserSaveEventValidatorTest {
         @Test
         fun executeValidate() {
 
-            sut!!.lastName = expectedLastName
-            sut!!.firstName = expectedFirstName
+            every {
 
-            val actual: ValidationResult<UserSaveEvent> = sut!!.validate(RegisteredUserId(1000))
+                mockUserRepository!!.findByUserId(any())
+            } returns existUser
 
-            val user = when(actual) {
+            sut = createSut(lastName = expectedLastName, firstName = expectedFirstName)
+
+            val user = when (val actual: ValidationResult<UserSaveEvent> = sut!!.validate(RegisteredUserId(1000))) {
                 is ValidResult -> actual.value
                 is InvalidResult -> fail(actual.toString())
             }
@@ -87,15 +101,21 @@ internal class UserSaveEventValidatorTest {
 
         private val itemName = "姓"
 
+        @BeforeEach
+        fun setUp() {
+            every {
+
+                mockUserRepository!!.findByUserId(any())
+            } returns existUser
+        }
+
         @DisplayName("未入力の場合")
         @Test
         fun whenEmpty() {
 
-            sut!!.lastName = ""
+            sut = createSut(lastName = "")
 
-            val actual: ValidationResult<UserSaveEvent> = sut!!.validate(RegisteredUserId(1000))
-
-            val errors = when(actual) {
+            val errors = when (val actual: ValidationResult<UserSaveEvent> = sut!!.validate(RegisteredUserId(1000))) {
                 is InvalidResult -> actual.errors
                 is ValidResult -> fail("入力チェックエラー扱いになりませんでした。")
             }
@@ -111,11 +131,9 @@ internal class UserSaveEventValidatorTest {
         @Test
         fun whenWhiteSpaceOnly() {
 
-            sut!!.lastName = " "
+            sut = createSut(lastName = " ")
 
-            val actual: ValidationResult<UserSaveEvent> = sut!!.validate(RegisteredUserId(1000))
-
-            val errors = when(actual) {
+            val errors = when (val actual: ValidationResult<UserSaveEvent> = sut!!.validate(RegisteredUserId(1000))) {
                 is InvalidResult -> actual.errors
                 is ValidResult -> fail("入力チェックエラー扱いになりませんでした。")
             }
@@ -131,17 +149,15 @@ internal class UserSaveEventValidatorTest {
         @Test
         fun whenMaxLengthOver() {
 
-            sut!!.lastName = "あ".repeat(31)
+            sut = createSut(lastName = "あ".repeat(31))
 
-            val actual: ValidationResult<UserSaveEvent> = sut!!.validate(RegisteredUserId(1000))
-
-            val errors = when(actual) {
+            val errors = when (val actual: ValidationResult<UserSaveEvent> = sut!!.validate(RegisteredUserId(1000))) {
                 is InvalidResult -> actual.errors
                 is ValidResult -> fail("入力チェックエラー扱いになりませんでした。")
             }
 
             val expected = ValidationErrors()
-            expected. addMaxLength(itemName, 30)
+            expected.addMaxLength(itemName, 30)
 
             val assert = ValidationAssert(expected, errors)
             assert.assert()
@@ -154,15 +170,21 @@ internal class UserSaveEventValidatorTest {
 
         private val itemName = "名"
 
+        @BeforeEach
+        fun setUp() {
+            every {
+
+                mockUserRepository!!.findByUserId(any())
+            } returns existUser
+        }
+
         @DisplayName("未入力の場合")
         @Test
         fun whenEmpty() {
 
-            sut!!.firstName = ""
+            sut = createSut(firstName = "")
 
-            val actual: ValidationResult<UserSaveEvent> = sut!!.validate(RegisteredUserId(1000))
-
-            val errors = when(actual) {
+            val errors = when (val actual: ValidationResult<UserSaveEvent> = sut!!.validate(RegisteredUserId(1000))) {
                 is InvalidResult -> actual.errors
                 is ValidResult -> fail("入力チェックエラー扱いになりませんでした。")
             }
@@ -178,11 +200,9 @@ internal class UserSaveEventValidatorTest {
         @Test
         fun whenWhiteSpaceOnly() {
 
-            sut!!.firstName = " "
+            sut = createSut(firstName = " ")
 
-            val actual: ValidationResult<UserSaveEvent> = sut!!.validate(RegisteredUserId(1000))
-
-            val errors = when(actual) {
+            val errors = when (val actual: ValidationResult<UserSaveEvent> = sut!!.validate(RegisteredUserId(1000))) {
                 is InvalidResult -> actual.errors
                 is ValidResult -> fail("入力チェックエラー扱いになりませんでした。")
             }
@@ -198,17 +218,15 @@ internal class UserSaveEventValidatorTest {
         @Test
         fun whenMaxLengthOver() {
 
-            sut!!.firstName = "あ".repeat(31)
+            sut = createSut(firstName = "あ".repeat(31))
 
-            val actual: ValidationResult<UserSaveEvent> = sut!!.validate(RegisteredUserId(1000))
-
-            val errors = when(actual) {
+            val errors = when (val actual: ValidationResult<UserSaveEvent> = sut!!.validate(RegisteredUserId(1000))) {
                 is InvalidResult -> actual.errors
                 is ValidResult -> fail("入力チェックエラー扱いになりませんでした。")
             }
 
             val expected = ValidationErrors()
-            expected. addMaxLength(itemName, 30)
+            expected.addMaxLength(itemName, 30)
 
             val assert = ValidationAssert(expected, errors)
             assert.assert()
@@ -221,15 +239,21 @@ internal class UserSaveEventValidatorTest {
 
         private val itemName = "誕生日"
 
+        @BeforeEach
+        fun setUp() {
+            every {
+
+                mockUserRepository!!.findByUserId(any())
+            } returns existUser
+        }
+
         @DisplayName("未入力の場合")
         @Test
         fun whenEmpty() {
 
-            sut!!.birthDay = ""
+            sut = createSut(birthDay = "")
 
-            val actual: ValidationResult<UserSaveEvent> = sut!!.validate(RegisteredUserId(1000))
-
-            val errors = when(actual) {
+            val errors = when (val actual: ValidationResult<UserSaveEvent> = sut!!.validate(RegisteredUserId(1000))) {
                 is InvalidResult -> actual.errors
                 is ValidResult -> fail("入力チェックエラー扱いになりませんでした。")
             }
@@ -245,11 +269,9 @@ internal class UserSaveEventValidatorTest {
         @Test
         fun whenWhiteSpaceOnly() {
 
-            sut!!.birthDay = " "
+            sut = createSut(birthDay = " ")
 
-            val actual: ValidationResult<UserSaveEvent> = sut!!.validate(RegisteredUserId(1000))
-
-            val errors = when(actual) {
+            val errors = when (val actual: ValidationResult<UserSaveEvent> = sut!!.validate(RegisteredUserId(1000))) {
                 is InvalidResult -> actual.errors
                 is ValidResult -> fail("入力チェックエラー扱いになりませんでした。")
             }
@@ -269,11 +291,9 @@ internal class UserSaveEventValidatorTest {
             @Test
             fun whenInvalidFormat() {
 
-                sut!!.birthDay = "1986/12/16"
+                sut = createSut(birthDay = "1986/12/16")
 
-                val actual: ValidationResult<UserSaveEvent> = sut!!.validate(RegisteredUserId(1000))
-
-                val errors = when(actual) {
+                val errors = when (val actual: ValidationResult<UserSaveEvent> = sut!!.validate(RegisteredUserId(1000))) {
                     is InvalidResult -> actual.errors
                     is ValidResult -> fail("入力チェックエラー扱いになりませんでした。")
                 }
@@ -289,11 +309,9 @@ internal class UserSaveEventValidatorTest {
             @Test
             fun whenInvalidValue() {
 
-                sut!!.birthDay = "1987-02-29"
+                sut = createSut(birthDay = "1987-02-29")
 
-                val actual: ValidationResult<UserSaveEvent> = sut!!.validate(RegisteredUserId(1000))
-
-                val errors = when(actual) {
+                val errors = when (val actual: ValidationResult<UserSaveEvent> = sut!!.validate(RegisteredUserId(1000))) {
                     is InvalidResult -> actual.errors
                     is ValidResult -> fail("入力チェックエラー扱いになりませんでした。")
                 }
@@ -309,11 +327,9 @@ internal class UserSaveEventValidatorTest {
             @Test
             fun whenNotZeroPadding() {
 
-                sut!!.birthDay = "1987-2-1"
+                sut = createSut(birthDay = "1987-2-1")
 
-                val actual: ValidationResult<UserSaveEvent> = sut!!.validate(RegisteredUserId(1000))
-
-                val errors = when(actual) {
+                val errors = when (val actual: ValidationResult<UserSaveEvent> = sut!!.validate(RegisteredUserId(1000))) {
                     is InvalidResult -> actual.errors
                     is ValidResult -> fail("入力チェックエラー扱いになりませんでした。")
                 }
@@ -325,5 +341,58 @@ internal class UserSaveEventValidatorTest {
                 assert.assert()
             }
         }
+    }
+
+
+    @DisplayName("ユーザが存在しない場合")
+    @Nested
+    inner class NotExistUser {
+
+        @BeforeEach
+        fun setUp() {
+            every {
+
+                mockUserRepository!!.findByUserId(any())
+            } returns null
+        }
+
+        @DisplayName("登録済みユーザIDが渡された場合")
+        @Test
+        fun whenPassedRegisteredUserId() {
+
+            val errors = when (val actual: ValidationResult<UserSaveEvent> = sut!!.validate(RegisteredUserId(1000))) {
+                is InvalidResult -> actual.errors
+                is ValidResult -> fail("入力チェックエラー扱いになりませんでした。")
+            }
+
+            val expected = ValidationErrors()
+            expected.addNotExistUser()
+
+            val assert = ValidationAssert(expected, errors)
+            assert.assert()
+        }
+
+        @DisplayName("未登録ユーザIDが渡された場合")
+        @Test
+        fun whenPassedNotRegisteredUserId() {
+
+            val user = when (val actual: ValidationResult<UserSaveEvent> = sut!!.validate(NotRegisteredUserId)) {
+                is ValidResult -> actual.value
+                is InvalidResult -> fail(actual.toString())
+            }
+
+            assertEquals(NotRegisteredUserId, user.userId)
+            assertEquals("テスト姓", user.userName.lastName)
+            assertEquals("テスト名", user.userName.firstName)
+            assertEquals(LocalDate.of(1986, 12, 16), user.birthDay.value)
+        }
+    }
+
+    private fun createSut(
+            lastName: String = "テスト姓",
+            firstName: String = "テスト名",
+            birthDay: String = "1986-12-16"): UserSaveEventValidator {
+
+        return UserSaveEventValidator(mockUserRepository!!, lastName, firstName, birthDay)
     }
 }

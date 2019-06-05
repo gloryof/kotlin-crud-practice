@@ -39,6 +39,14 @@ class ValidationErrors {
     }
 
     /**
+     * ユーザが存在しないエラーを追加する.
+     */
+    fun addNotExistUser() {
+
+        errors.add(ValidationError(ErrorInfo.NotExistUser, arrayOf()))
+    }
+
+    /**
      * エラーがあるかを判定する.
      * @return エラーがある場合：true、エラーがない場合：false
      */

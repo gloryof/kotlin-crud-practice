@@ -1,6 +1,5 @@
 package jp.glory.kotlin.crud.context.base.domain.error.error
 
-import jp.glory.kotlin.crud.context.base.domain.error.ErrorInfo
 import jp.glory.kotlin.crud.context.base.domain.error.ValidationError
 import jp.glory.kotlin.crud.context.base.domain.error.ValidationErrors
 import org.junit.jupiter.api.Assertions.*
@@ -10,7 +9,7 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 
 internal class ValidationErrorsTest {
-    var sut : ValidationErrors? = null
+    var sut: ValidationErrors? = null
 
     @DisplayName("要素が空の場合")
     @Nested
@@ -33,7 +32,7 @@ internal class ValidationErrorsTest {
         @Test
         fun testToList() {
 
-            val actualList:List<ValidationError> = sut!!.toList()
+            val actualList: List<ValidationError> = sut!!.toList()
 
             assertTrue(actualList.isEmpty())
         }
@@ -60,14 +59,13 @@ internal class ValidationErrorsTest {
             @Test
             fun testToList() {
 
-                val actualList:List<ValidationError> = sut!!.toList()
+                val actualList: List<ValidationError> = sut!!.toList()
 
                 assertFalse(actualList.isEmpty())
                 assertEquals(1, actualList.size)
 
-                val actualError: ValidationError = actualList.get(0)
-                assertEquals(ErrorInfo.Required, actualError.errorInfo)
-                assertArrayEquals(arrayOf<Any>("テスト項目"), actualError.messageParam)
+                val actualError: ValidationError = actualList[0]
+                assertEquals("テスト項目は必須です。", actualError.createMessage())
             }
         }
 
@@ -79,7 +77,7 @@ internal class ValidationErrorsTest {
             @BeforeEach
             fun setUp() {
 
-                sut!!.addMaxLength("テスト項目", 100)
+                sut!!.addMaxLength("テスト項目", 1000)
             }
 
             @DisplayName("hasErrorはtrue")
@@ -93,14 +91,15 @@ internal class ValidationErrorsTest {
             @Test
             fun testToList() {
 
-                val actualList:List<ValidationError> = sut!!.toList()
+                val actualList: List<ValidationError> = sut!!.toList()
 
                 assertFalse(actualList.isEmpty())
                 assertEquals(1, actualList.size)
 
-                val actualError: ValidationError = actualList.get(0)
-                assertEquals(ErrorInfo.MaxLengthOver, actualError.errorInfo)
-                assertArrayEquals(arrayOf<Any>("テスト項目", 100), actualError.messageParam)
+                val actualError: ValidationError = actualList[0]
+                assertEquals(
+                        "テスト項目は1,000文字以内で入力してください。",
+                        actualError.createMessage())
             }
         }
 
@@ -126,14 +125,49 @@ internal class ValidationErrorsTest {
             @Test
             fun testToList() {
 
-                val actualList:List<ValidationError> = sut!!.toList()
+                val actualList: List<ValidationError> = sut!!.toList()
 
                 assertFalse(actualList.isEmpty())
                 assertEquals(1, actualList.size)
 
-                val actualError: ValidationError = actualList.get(0)
-                assertEquals(ErrorInfo.InvalidFormatDate, actualError.errorInfo)
-                assertArrayEquals(arrayOf<Any>("テスト項目"), actualError.messageParam)
+                val actualError: ValidationError = actualList[0]
+                assertEquals(
+                        "日付形式が不正です。YYYY-MM-DD形式かつ存在する日付で入力してください。",
+                        actualError.createMessage())
+            }
+        }
+
+        @DisplayName("addNotExistUserが実行された場合")
+        @Nested
+        inner class WhenNotExistUser {
+
+
+            @BeforeEach
+            fun setUp() {
+
+                sut!!.addNotExistUser()
+            }
+
+            @DisplayName("hasErrorはtrue")
+            @Test
+            fun testHasError() {
+
+                assertTrue(sut!!.hasError())
+            }
+
+            @DisplayName("toListで1つの要素が返る")
+            @Test
+            fun testToList() {
+
+                val actualList: List<ValidationError> = sut!!.toList()
+
+                assertFalse(actualList.isEmpty())
+                assertEquals(1, actualList.size)
+
+                val actualError: ValidationError = actualList[0]
+                assertEquals(
+                        "ユーザが存在しません。",
+                        actualError.createMessage())
             }
         }
     }

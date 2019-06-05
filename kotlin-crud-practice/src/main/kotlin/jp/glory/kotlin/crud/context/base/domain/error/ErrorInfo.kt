@@ -14,5 +14,8 @@ enum class ErrorInfo(val message: String) {
     MaxLengthOver("{0}は{1}文字以内で入力してください。"),
 
     /** 日付形式エラー. */
-    InvalidFormatDate("日付形式が不正です。YYYY-MM-DD形式かつ存在する日付で入力してください。")
+    InvalidFormatDate("日付形式が不正です。YYYY-MM-DD形式かつ存在する日付で入力してください。"),
+
+    /** ユーザ存在エラー. */
+    NotExistUser("ユーザが存在しません。"),
 }
