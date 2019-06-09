@@ -45,7 +45,7 @@ class SearchUser(private val repository: UserRepository) {
      *
      * @param user ユーザ
      */
-    inner class UserResult(private val user: User) {
+    class UserResult(private val user: User) {
 
         /**
          * ユーザID.
@@ -66,6 +66,11 @@ class SearchUser(private val repository: UserRepository) {
          * 誕生日.
          */
         val birthDay: LocalDate = user.birthDay.value
+
+        /**
+         * 年齢.
+         */
+        val age: Int = user.birthDay.calculateAge().value
     }
 
 }
