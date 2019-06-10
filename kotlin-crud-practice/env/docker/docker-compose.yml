@@ -1,0 +1,13 @@
+version: "3"
+services:
+  crud-db:
+    build:
+      context: ../
+      dockerfile: docker/postgres/Dockerfile
+    container_name: crud-db
+    environment:
+      - LC_ALL=C.UTF-8
+    env_file:
+      - common.env
+    ports:
+      - 54320:5432
