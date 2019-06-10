@@ -11,11 +11,13 @@ import jp.glory.kotlin.crud.context.user.domain.value.NotRegisteredUserId
 import jp.glory.kotlin.crud.context.user.domain.value.RegisteredUserId
 import jp.glory.kotlin.crud.context.user.domain.value.UserName
 import jp.glory.kotlin.crud.externals.doma.user.dao.UsersDao
+import jp.glory.kotlin.crud.externals.doma.user.holder.UsersTable
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.seasar.doma.jdbc.Result
 import java.time.LocalDate
 
 internal class UserSaveEventRepositoryDbImplTest {
@@ -43,7 +45,7 @@ internal class UserSaveEventRepositoryDbImplTest {
         fun whenRegister() {
 
             every { daoMock!!.getNextUserId() } returns 1000
-            every { daoMock!!.insert(any()) } returns Unit
+            every { daoMock!!.insert(any()) } returns Result<UsersTable>(1, null)
 
             val event = UserSaveEvent(
                 userId = NotRegisteredUserId,
@@ -70,7 +72,7 @@ internal class UserSaveEventRepositoryDbImplTest {
         @Test
         fun whenUpdate() {
 
-            every { daoMock!!.update(any()) } returns Unit
+            every { daoMock!!.update(any()) } returns Result<UsersTable>(1, null)
 
             val event = UserSaveEvent(
                 userId = RegisteredUserId(1000),
