@@ -28,7 +28,6 @@ curl http://localhost:8080/user/${id}
 curl -v -X POST -H 'Content-Type:application/json' -d '{"firstName":"テスト姓","lastName":"テスト名","birthDay":"1986-12-16"}' http://localhost:8080/user
 ```
 
-```
 
 ### データの更新
 ```
