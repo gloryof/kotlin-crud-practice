@@ -1,6 +1,7 @@
 package jp.glory.kotlin.crud.externals.doma.user.holder
 
 import org.seasar.doma.Entity
+import org.seasar.doma.Id
 import org.seasar.doma.Table
 import java.time.LocalDate
 
@@ -15,7 +16,7 @@ import java.time.LocalDate
 @Entity(immutable = true)
 @Table(name = "users")
 class UsersTable(
-    val userId: Long,
+    @Id val userId: Long,
     val lastName: String,
     val firstName: String,
     val birthDay: LocalDate

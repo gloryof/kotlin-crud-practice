@@ -1,0 +1,13 @@
+doma:
+  dialect: postgres
+  query-timeout: 60
+  naming: snake-lower-case
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:54320/kotlin-crud
+    username: crud-user
+    password: crud-user
+    maximum-pool-size: 90
+    auto-commit: false
+    connection-timeout: 300000

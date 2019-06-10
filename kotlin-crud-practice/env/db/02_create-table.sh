@@ -3,10 +3,11 @@
 psql -U postgres -d kotlin-crud << "EOSQL"
 
 CREATE TABLE users (
-    id bigint,
-    name varchar(40),
-    birthDay date,
-    PRIMARY KEY(id)
+    user_id bigint,
+    last_name varchar(40),
+    first_name varchar(40),
+    birth_day date,
+    PRIMARY KEY(user_id)
 );
 
 CREATE SEQUENCE user_id_seq;

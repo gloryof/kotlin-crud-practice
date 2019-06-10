@@ -7,15 +7,15 @@ import jp.glory.kotlin.crud.context.user.domain.value.RegisteredUserId
 import jp.glory.kotlin.crud.context.user.domain.value.UserId
 import jp.glory.kotlin.crud.externals.doma.user.dao.UsersDao
 import jp.glory.kotlin.crud.externals.doma.user.holder.UsersTable
-import org.seasar.doma.Dao
+import org.springframework.stereotype.Repository
 
 /**
  * ユーザ保存イベントリポジトリのDB実装.
  *
  * @param usersDao usersのDAO
  */
-@Dao
-class UserSaveEventRepositoryDbImpl(val usersDao: UsersDao) : UserSaveEventRepository {
+@Repository
+class UserSaveEventRepositoryDbImpl(private val usersDao: UsersDao) : UserSaveEventRepository {
 
     override fun save(userSaveEvent: UserSaveEvent): RegisteredUserId {
 

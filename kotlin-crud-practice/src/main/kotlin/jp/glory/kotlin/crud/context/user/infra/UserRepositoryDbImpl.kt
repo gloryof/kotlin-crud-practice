@@ -15,7 +15,7 @@ import org.springframework.stereotype.Repository
  * @param usersDao usersテーブルDAO.
  */
 @Repository
-class UserRepositoryDbImpl(val usersDao: UsersDao) : UserRepository {
+class UserRepositoryDbImpl(private val usersDao: UsersDao) : UserRepository {
 
     override fun findAll(): List<User> {
 

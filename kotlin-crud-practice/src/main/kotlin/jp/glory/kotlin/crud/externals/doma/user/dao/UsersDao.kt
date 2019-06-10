@@ -5,11 +5,14 @@ import org.seasar.doma.Dao
 import org.seasar.doma.Insert
 import org.seasar.doma.Select
 import org.seasar.doma.Update
+import org.seasar.doma.boot.ConfigAutowireable
 import org.seasar.doma.experimental.Sql
+import org.seasar.doma.jdbc.Result
 
 /**
  * usersテーブルDao.
  */
+@ConfigAutowireable
 @Dao
 interface UsersDao {
 
@@ -43,11 +46,11 @@ interface UsersDao {
      * 登録を行う.
      */
     @Insert
-    fun insert(usersTable: UsersTable)
+    fun insert(usersTable: UsersTable): Result<UsersTable>
 
     /**
      * 更新を行う.
      */
     @Update
-    fun update(usersTable: UsersTable)
+    fun update(usersTable: UsersTable): Result<UsersTable>
 }
