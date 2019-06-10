@@ -1,4 +1,4 @@
-package jp.glory.kotlin.crud.context.user.infra
+package jp.glory.kotlin.crud.context.user.infra.repository
 
 import jp.glory.kotlin.crud.context.user.domain.event.UserSaveEvent
 import jp.glory.kotlin.crud.context.user.domain.repository.UserSaveEventRepository

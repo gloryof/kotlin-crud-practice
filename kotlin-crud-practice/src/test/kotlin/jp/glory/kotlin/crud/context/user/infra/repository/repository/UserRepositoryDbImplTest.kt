@@ -1,9 +1,10 @@
-package jp.glory.kotlin.crud.context.user.infra
+package jp.glory.kotlin.crud.context.user.infra.repository.repository
 
 import io.mockk.every
 import io.mockk.mockk
 import jp.glory.kotlin.crud.context.user.domain.entity.User
 import jp.glory.kotlin.crud.context.user.domain.value.RegisteredUserId
+import jp.glory.kotlin.crud.context.user.infra.repository.UserRepositoryDbImpl
 import jp.glory.kotlin.crud.externals.doma.user.dao.UsersDao
 import jp.glory.kotlin.crud.externals.doma.user.holder.UsersTable
 import org.junit.jupiter.api.Assertions.assertEquals

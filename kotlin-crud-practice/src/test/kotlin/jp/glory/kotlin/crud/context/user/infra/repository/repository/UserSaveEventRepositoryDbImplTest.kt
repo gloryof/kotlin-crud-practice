@@ -1,4 +1,4 @@
-package jp.glory.kotlin.crud.context.user.infra
+package jp.glory.kotlin.crud.context.user.infra.repository.repository
 
 import io.mockk.clearMocks
 import io.mockk.confirmVerified
@@ -10,6 +10,7 @@ import jp.glory.kotlin.crud.context.user.domain.value.BirthDay
 import jp.glory.kotlin.crud.context.user.domain.value.NotRegisteredUserId
 import jp.glory.kotlin.crud.context.user.domain.value.RegisteredUserId
 import jp.glory.kotlin.crud.context.user.domain.value.UserName
+import jp.glory.kotlin.crud.context.user.infra.repository.UserSaveEventRepositoryDbImpl
 import jp.glory.kotlin.crud.externals.doma.user.dao.UsersDao
 import jp.glory.kotlin.crud.externals.doma.user.holder.UsersTable
 import org.junit.jupiter.api.Assertions.assertEquals

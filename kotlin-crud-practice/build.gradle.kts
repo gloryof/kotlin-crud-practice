@@ -33,6 +33,8 @@ dependencies {
     }
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testImplementation("io.mockk:mockk:1.9")
+    testImplementation("com.tngtech.archunit:archunit-junit5-api:0.10.2")
+    testImplementation("com.tngtech.archunit:archunit-junit5-engine:0.10.2")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
 }
 
