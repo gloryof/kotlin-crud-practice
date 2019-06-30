@@ -5,8 +5,8 @@ import jp.glory.kotlin.crud.context.user.domain.repository.UserSaveEventReposito
 import jp.glory.kotlin.crud.context.user.domain.value.NotRegisteredUserId
 import jp.glory.kotlin.crud.context.user.domain.value.RegisteredUserId
 import jp.glory.kotlin.crud.context.user.domain.value.UserId
-import jp.glory.kotlin.crud.externals.doma.user.dao.UsersDao
-import jp.glory.kotlin.crud.externals.doma.user.holder.UsersTable
+import jp.glory.kotlin.crud.externals.mongodb.user.collection.UsersCollection
+import jp.glory.kotlin.crud.externals.mongodb.user.dao.UsersDao
 import org.springframework.stereotype.Repository
 
 /**
@@ -15,7 +15,10 @@ import org.springframework.stereotype.Repository
  * @param usersDao usersのDAO
  */
 @Repository
-class UserSaveEventRepositoryDbImpl(private val usersDao: UsersDao) : UserSaveEventRepository {
+class UserSaveEventRepositoryMongoImpl(
+    private val usersDao: UsersDao
+
+) : UserSaveEventRepository {
 
     override fun save(userSaveEvent: UserSaveEvent): RegisteredUserId {
 
@@ -35,14 +38,14 @@ class UserSaveEventRepositoryDbImpl(private val usersDao: UsersDao) : UserSaveEv
 
         val newUserId: Long = usersDao.getNextUserId()
 
-        val record = UsersTable(
+        val record = UsersCollection(
             userId = newUserId,
             lastName = userSaveEvent.userName.lastName,
             firstName = userSaveEvent.userName.firstName,
             birthDay = userSaveEvent.birthDay.value
         )
 
-        usersDao.insert(record)
+        usersDao.save(record)
 
         return RegisteredUserId(newUserId)
     }
@@ -56,14 +59,16 @@ class UserSaveEventRepositoryDbImpl(private val usersDao: UsersDao) : UserSaveEv
      */
     private fun update(userId: RegisteredUserId, userSaveEvent: UserSaveEvent): RegisteredUserId {
 
-        val record = UsersTable(
+        val before: UsersCollection = usersDao.findByUserId(userId.value).orElseThrow()
+        val record = UsersCollection(
+            id = before.id,
             userId = userId.value,
             lastName = userSaveEvent.userName.lastName,
             firstName = userSaveEvent.userName.firstName,
             birthDay = userSaveEvent.birthDay.value
         )
 
-        usersDao.update(record)
+        usersDao.save(record)
 
         return userId
     }

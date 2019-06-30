@@ -5,9 +5,10 @@ import jp.glory.kotlin.crud.context.user.domain.repository.UserRepository
 import jp.glory.kotlin.crud.context.user.domain.value.BirthDay
 import jp.glory.kotlin.crud.context.user.domain.value.RegisteredUserId
 import jp.glory.kotlin.crud.context.user.domain.value.UserName
-import jp.glory.kotlin.crud.externals.doma.user.dao.UsersDao
-import jp.glory.kotlin.crud.externals.doma.user.holder.UsersTable
+import jp.glory.kotlin.crud.externals.mongodb.user.collection.UsersCollection
+import jp.glory.kotlin.crud.externals.mongodb.user.dao.UsersDao
 import org.springframework.stereotype.Repository
+import java.util.*
 
 /**
  * ユーザリポジトリのDB実装.
@@ -15,26 +16,27 @@ import org.springframework.stereotype.Repository
  * @param usersDao usersテーブルDAO.
  */
 @Repository
-class UserRepositoryDbImpl(private val usersDao: UsersDao) : UserRepository {
+class UserRepositoryMongoImpl(private val usersDao: UsersDao) : UserRepository {
 
     override fun findAll(): List<User> {
 
-        return usersDao.selectAll().map { createUser(it) }
+        return usersDao.findAll().map { createUser(it) }
     }
 
     override fun findByUserId(id: RegisteredUserId): User? {
 
-        val result: UsersTable = usersDao.selectById(id.value) ?: return null
+        val opt: Optional<UsersCollection> = usersDao.findById(id.value)
 
-        return createUser(result)
+        return opt.map { createUser(it) }.orElse(null)
     }
+
 
     /**
      * usersテーブルのレコードからユーザエンティティを作成する.
      *
      * @return ユーザエンティティ
      */
-    private fun createUser(record: UsersTable): User {
+    private fun createUser(record: UsersCollection): User {
 
         return User(
             userId = RegisteredUserId(record.userId),

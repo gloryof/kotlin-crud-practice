@@ -1,12 +1,11 @@
-package jp.glory.kotlin.crud.context.user.infra.repository.repository
+package jp.glory.kotlin.crud.context.user.infra.repository
 
 import io.mockk.every
 import io.mockk.mockk
 import jp.glory.kotlin.crud.context.user.domain.entity.User
 import jp.glory.kotlin.crud.context.user.domain.value.RegisteredUserId
-import jp.glory.kotlin.crud.context.user.infra.repository.UserRepositoryDbImpl
-import jp.glory.kotlin.crud.externals.doma.user.dao.UsersDao
-import jp.glory.kotlin.crud.externals.doma.user.holder.UsersTable
+import jp.glory.kotlin.crud.externals.mongodb.user.collection.UsersCollection
+import jp.glory.kotlin.crud.externals.mongodb.user.dao.UsersDao
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.fail
@@ -15,27 +14,28 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
+import java.util.*
 
-internal class UserRepositoryDbImplTest {
+internal class UserRepositoryMongoImplTest {
 
-    private var sut: UserRepositoryDbImpl? = null
-    private var mockRepository: UsersDao? = null
+    private var sut: UserRepositoryMongoImpl? = null
+    private var mockDao: UsersDao? = null
 
-    private val expectedUser1 = UsersTable(
+    private val expectedUser1 = UsersCollection(
         userId = 1000,
         lastName = "テスト姓1",
         firstName = "テスト名1",
         birthDay = LocalDate.of(1986, 12, 16)
     )
 
-    private val expectedUser2 = UsersTable(
+    private val expectedUser2 = UsersCollection(
         userId = 1001,
         lastName = "テスト姓2",
         firstName = "テスト名2",
         birthDay = LocalDate.of(1987, 1, 17)
     )
 
-    private val expectedUser3 = UsersTable(
+    private val expectedUser3 = UsersCollection(
         userId = 1002,
         lastName = "テスト姓3",
         firstName = "テスト名3",
@@ -45,8 +45,8 @@ internal class UserRepositoryDbImplTest {
     @BeforeEach
     fun setUp() {
 
-        mockRepository = mockk()
-        sut = UserRepositoryDbImpl(mockRepository!!)
+        mockDao = mockk()
+        sut = UserRepositoryMongoImpl(mockDao!!)
     }
 
     @DisplayName("findAllのテスト")
@@ -56,7 +56,7 @@ internal class UserRepositoryDbImplTest {
         @BeforeEach
         fun setUp() {
 
-            every { mockRepository!!.selectAll() } returns listOf(expectedUser1, expectedUser2, expectedUser3)
+            every { mockDao!!.findAll() } returns listOf(expectedUser1, expectedUser2, expectedUser3)
         }
 
         @DisplayName("全てのユーザが返る")
@@ -94,8 +94,9 @@ internal class UserRepositoryDbImplTest {
         @BeforeEach
         fun setUp() {
 
-            every { mockRepository!!.selectById(1001) } returns expectedUser2
-            every { mockRepository!!.selectById(9999) } returns null
+            every { mockDao!!.findById(1001) } returns Optional.of(expectedUser2)
+            every { mockDao!!.findById(9999) } returns Optional.empty()
+
         }
 
         @DisplayName("レコードが存在する場合")
