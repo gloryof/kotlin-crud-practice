@@ -3,11 +3,12 @@ services:
   crud-db:
     build:
       context: ../
-      dockerfile: docker/postgres/Dockerfile
+      dockerfile: docker/mongodb/Dockerfile
     container_name: crud-db
     environment:
       - LC_ALL=C.UTF-8
+      - MONGO_INITDB_DATABASE=crud-db
     env_file:
       - common.env
     ports:
-      - 54320:5432
+      - 27017:27017

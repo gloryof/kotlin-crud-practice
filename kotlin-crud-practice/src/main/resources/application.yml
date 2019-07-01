@@ -4,10 +4,10 @@ doma:
   naming: snake-lower-case
 
 spring:
-  datasource:
-    url: jdbc:postgresql://localhost:54320/kotlin-crud
-    username: crud-user
-    password: crud-user
-    maximum-pool-size: 90
-    auto-commit: false
-    connection-timeout: 300000
+  data:
+    mongodb:
+      database: crud-db
+      host: localhost
+      port: 27017
+      username: crud-user
+      password: crud-user

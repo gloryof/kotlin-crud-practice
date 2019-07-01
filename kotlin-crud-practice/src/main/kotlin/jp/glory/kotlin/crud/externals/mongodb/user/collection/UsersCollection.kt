@@ -12,7 +12,7 @@ import java.time.LocalDate
  * @param birthDay 誕生日
  */
 @Document("users")
-class UsersCollection(
+data class UsersCollection(
     val id: String? = null,
     val userId: Long,
     val lastName: String,
